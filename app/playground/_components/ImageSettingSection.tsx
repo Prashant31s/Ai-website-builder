@@ -79,6 +79,7 @@ function ImageSettingSection({ selectedEl }: Props) {
         if(selectedImage){
             setLoading(true)
             const imageRef = await imagekit.upload ({
+                // @ts-ignore
                 file: selectedImage,
                 fileName: Date.now()+ ".png",
                 isPublished: true    
