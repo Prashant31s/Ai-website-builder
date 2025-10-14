@@ -9,11 +9,11 @@ export async function POST(req : NextRequest) {
             "https://openrouter.ai/api/v1/chat/completions",
             {
                 // model: "deepseek/deepseek-chat-v3.1:free", // or any deepsseek
-                // model: "google/gemini-2.5-flash-preview-09-2025", //gemini paid working
+                model: "google/gemini-2.5-flash-preview-09-2025", //gemini paid working
                 // model: "google/gemini-2.0-flash-exp:free", //gemini free not working
                 // model: 'openai/gpt-oss-20b:free', //free not working
                 // model: 'deepseek/deepseek-v3.2-exp', deepseel paid slow resp
-                model: 'meta-llama/llama-3.2-3b-instruct:free', //working
+                // model: 'meta-llama/llama-3.2-3b-instruct:free', //working
                 messages,
                 stream: true, // enable streaming
             },
