@@ -37,7 +37,7 @@ const suggestions = [
 
 function Hero() {
     const [userInput, setUserInput] = useState(''); 
-    const user = useUser()
+    const { user } = useUser()
     const router = useRouter();
     const [loading, setLoading]  = useState(false)
     const {has} = useAuth();

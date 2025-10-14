@@ -184,6 +184,7 @@ const HTML_CODE =`
                     ref={iframeRef}
                     className={`${selectedScreenSize == 'web' ? 'w-full' : 'w-130'} h-[600px] border-2 rounded-xl`}
                     sandbox="allow-scripts allow-same-origin"
+                    style={{height:'100%'}}
                 />
                 <WebPageTools selectedScreenSize={selectedScreenSize} setSelectedScreenSize={setSelectedScreenSize} generatedCode ={generatedCode }/>
             </div>
