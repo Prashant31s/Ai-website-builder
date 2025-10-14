@@ -143,16 +143,16 @@ const HTML_CODE =`
             }
         };
 
-        doc.body?.addEventListener("mouseover", handleMouseOver);
-        doc.body?.addEventListener("mouseout", handleMouseOut);
-        doc.body?.addEventListener("click", handleClick);
+        doc?.addEventListener("mouseover", handleMouseOver);
+        doc?.addEventListener("mouseout", handleMouseOut);
+        doc?.addEventListener("click", handleClick);
         doc?.addEventListener("keydown", handleKeyDown);
 
         // Cleanup on unmount
         return () => {
-            doc.body?.removeEventListener("mouseover", handleMouseOver);
-            doc.body?.removeEventListener("mouseout", handleMouseOut);
-            doc.body?.removeEventListener("click", handleClick);
+            doc?.removeEventListener("mouseover", handleMouseOver);
+            doc?.removeEventListener("mouseout", handleMouseOut);
+            doc?.removeEventListener("click", handleClick);
             doc?.removeEventListener("keydown", handleKeyDown);
         };
     }, []);

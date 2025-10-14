@@ -124,13 +124,13 @@ function ElementSettingSection({ selectedElement, clearSelection }: Props) {
                     onValueChange={setAlign}
                     className="bg-gray-100 rounded-lg p-1 inline-flex w-full justify-between"
                 >
-                    <ToggleGroupItem value="left" className="p-2 rounded hover:bg-gray-200 flex-1">
+                    <ToggleGroupItem value="left" className="p-2 rounded hover:bg-gray-200 flex-1 data-[state=on]:bg-gray-300">
                         <AlignLeft size={20} />
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="center" className="p-2 rounded hover:bg-gray-200 flex-1">
+                    <ToggleGroupItem value="center" className="p-2 rounded hover:bg-gray-200 flex-1 data-[state=on]:bg-gray-300">
                         <AlignCenter size={20} />
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="right" className="p-2 rounded hover:bg-gray-200 flex-1">
+                    <ToggleGroupItem value="right" className="p-2 rounded hover:bg-gray-200 flex-1 data-[state=on]:bg-gray-300">
                         <AlignRight size={20} />
                     </ToggleGroupItem>
                 </ToggleGroup>
