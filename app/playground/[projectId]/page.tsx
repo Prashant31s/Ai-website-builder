@@ -21,6 +21,35 @@ export type Messages = {
   content: string
 }
 
+const extractCodeFromResponse = (response: string) => {
+  const fencedMatch = response.match(/```(?:html)?\s*([\s\S]*?)```/i);
+  if (fencedMatch?.[1]) {
+    return {
+      isCode: true,
+      code: fencedMatch[1].trim(),
+      text: response.replace(fencedMatch[0], "").trim(),
+    };
+  }
+
+  const looksLikeHtml =
+    /<(main|section|div|header|footer|nav|form|button|article|aside|h1|p)\b/i.test(response) &&
+    /<\/[a-z][^>]*>/i.test(response);
+
+  if (looksLikeHtml) {
+    return {
+      isCode: true,
+      code: response.trim(),
+      text: "",
+    };
+  }
+
+  return {
+    isCode: false,
+    code: "",
+    text: response.trim(),
+  };
+};
+
 const Prompt =`userInput: {userInput}
 
 Instructions:
@@ -76,11 +105,10 @@ function PlayGround() {
     const result = await axios.get('/api/frames?frameId=' + frameId + '&projectId=' + projectId)
     console.log("ressull", result.data)
     setFrameDetail(result.data)
-    const designCode =result?.data?.[0].designCode
-    const index = designCode?.indexOf("```html") +7;
-    const formattedCode = designCode?.slice(index);
-    setGeneratedCode(formattedCode)
-    console.log("kkkkk", formattedCode, designCode)
+    const designCode = result?.data?.[0]?.designCode ?? "";
+    const parsedDesign = extractCodeFromResponse(designCode);
+    setGeneratedCode(parsedDesign.code || designCode);
+    console.log("kkkkk", parsedDesign.code || designCode, designCode)
 
     if(result?.data?.chatMessages?.length == 1){
       const UserMsg = result.data?.chatMessages[0].content;
@@ -108,7 +136,6 @@ function PlayGround() {
     const decoder = new TextDecoder();
 
     let aiResponse ='';
-    let isCode = false;
 
     while(true){
       //@ts-ignore
@@ -117,35 +144,25 @@ function PlayGround() {
 
       const chunk = decoder.decode(value, {stream: true})
       aiResponse += chunk;
-
-      //check if AI start sending code
-
-      console.log("airess", aiResponse, aiResponse.includes('```html'), isCode)
-
-      if(!isCode && aiResponse.includes('```html')){
-        isCode =true;
-        const index = aiResponse.indexOf('```html')+7;
-        const initialCodeChunk = aiResponse.slice(index)
-        setGeneratedCode((prev:any) =>prev + initialCodeChunk )
-      }
-      else if(isCode){
-
-        setGeneratedCode((prev: any)=> prev + chunk)
+      const parsedChunk = extractCodeFromResponse(aiResponse);
+      if (parsedChunk.isCode && parsedChunk.code) {
+        setGeneratedCode(parsedChunk.code);
       }
     }
-      //after streaming ends
-    await saveGeneratedCode(aiResponse)
-    if(!isCode){
-        setMessages((prev: any)=>[
-          ...prev,
-          {role: 'assistant', content: aiResponse}
-        ])
-      }
-    else{
+
+    const parsedFinalResponse = extractCodeFromResponse(aiResponse);
+
+    if(parsedFinalResponse.isCode && parsedFinalResponse.code){
+      await saveGeneratedCode(parsedFinalResponse.code);
       setMessages((prev: any)=>[
         ...prev,
-        {role: 'assistant', content: 'Your Code is Ready !'}
+        {role: 'assistant', content: 'Your code is ready!'}
       ])
+    }else{
+        setMessages((prev: any)=>[
+          ...prev,
+          {role: 'assistant', content: parsedFinalResponse.text || aiResponse}
+        ])
     }
     
     setLoading(false)
@@ -160,9 +177,15 @@ function PlayGround() {
         frameId: frameId
       })
       console.log("result", result)
-    }catch(err:any){
+    }catch(err: unknown){
       // helpful logging when a request fails (status, message)
-      console.error('Failed to save messages', err?.response?.status, err?.response?.data || err.message)
+      if (axios.isAxiosError(err)) {
+        console.error('Failed to save messages', err.response?.status, err.response?.data || err.message)
+      } else if (err instanceof Error) {
+        console.error('Failed to save messages', err.message)
+      } else {
+        console.error('Failed to save messages', err)
+      }
     }
   }
 
